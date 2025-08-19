@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>Has iniciado sesión</h1>
+  <div id="user-info">
+    <img id="user-photo" src="" alt="Foto de perfil" width="100" />
+    <p id="user-name"></p>
+    <button id="logout">Cerrar sesión</button>
+    <button id="change-account">Cambiar de cuenta</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+      getRedirectResult,
+      GoogleAuthProvider,
+      GithubAuthProvider,
+      FacebookAuthProvider,
+      signInWithRedirect
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+   
+    const firebaseConfig = {
+      apiKey: "AIzaSyDT-JMa0jFS_4ye3PNAe74WJi2uU8Rubt4",
+      authDomain: "autentificacion-confiweb.firebaseapp.com",
+      projectId: "autentificacion-confiweb",
+      storageBucket: "autentificacion-confiweb.appspot.com",
+      messagingSenderId: "375052651567",
+      appId: "1:375052651567:web:8ed292809a3fa8c37d0ada",
+      measurementId: "G-G73NENNTW7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const userPhoto = document.getElementById("user-photo");
+    const userName = document.getElementById("user-name");
+    const logoutBtn = document.getElementById("logout");
+    const changeAccountBtn = document.getElementById("change-account");
+
+   
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userPhoto.src = user.photoURL;
+        userName.textContent = `Bienvenido, ${user.displayName}`;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+ 
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          console.log("Login con redirect:", result.user);
+        }
+      })
+      .catch((error) => {
+        console.error("Error en redirect:", error);
+      });
+
+   
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+  
+    changeAccountBtn.addEventListener("click", async () => {
+      await signOut(auth);
+
+
+      const provider = new FacebookAuthProvider();
+
+      signInWithRedirect(auth, provider);
+    });
+  </script>
+</body>
+</html>
